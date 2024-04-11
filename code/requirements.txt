@@ -1,0 +1,3 @@
+synapseclient >= 3.0.0
+google-cloud-bigquery >= 3.11.1
+db-dtypes >= 1.1.1
