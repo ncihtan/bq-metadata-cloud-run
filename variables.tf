@@ -1,6 +1,6 @@
 variable "project_id" {
   type        = string
-  description = "The ID of the project where the resources will be created"
+  description = "The ID of the Google project where the resources will be created"
 }
 
 variable "google_service_account" {
@@ -11,6 +11,7 @@ variable "google_service_account" {
     })
   })
 }
+
 variable "account_id" {
   type        = string
   description = "account_id of Cloud Run service account"
@@ -37,7 +38,7 @@ variable "job_name" {
 
 variable "job_description" {
   type        = string
-  description = "Addition text to describe the job"
+  description = "Additional text to describe the job"
   default     = ""
 }
 
@@ -61,5 +62,5 @@ variable "region" {
 
 variable "secret_id" {
   type        = string
-  description = "Name of secret containing Synapse auth token"
+  description = "Name of secret in secret manager containing Synapse auth token"
 }

@@ -10,14 +10,14 @@ Requires download access to individual HTAN-center Synapse projects.
 Requires access to deploy resources in the HTAN Google Cloud Project, `htan-dcc`. Please contact an owner of `htan-dcc` to request access (Owners in 2024: Clarisse Lau, Vesteinn Thorsson, William Longabaugh, ISB)
 
 ## Prerequisites
-- Create a [Synapse Auth Token secret](https://help.synapse.org/docs/Managing-Your-Account.2055405596.html#ManagingYourAccount-PersonalAccessTokens) in [Secret Manager](https://cloud.google.com/secret-manager/docs)
-- Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) 
+- Create a [Synapse Auth Token](https://help.synapse.org/docs/Managing-Your-Account.2055405596.html#ManagingYourAccount-PersonalAccessTokens) secret in [Secret Manager](https://cloud.google.com/secret-manager/docs)
+- Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) >= 1.7.0
 
 ## Docker Image
 Before creating job, build and push a docker image to Google Artifact Registry (recommended)
 
 ```
-cd code
+cd src
 docker build . -t gcr.io/<gc-project>/<image-name>
 docker push gcr.io/<gc-project>/<image-name>
 ```
