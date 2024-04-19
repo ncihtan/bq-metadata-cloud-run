@@ -2,7 +2,7 @@
 
 Cloud Run job to pull metadata manifests from Synapse and update tables in the Google BigQuery dataset `htan-dcc.combined_assays`. This dataset contains clinical, biospecimen, and assay metadata tables combined across HTAN centers. 
 
-The Cloud Run job is scheduled to run weekly on Mondays at 0300 ET.
+Scheduled to run daily at 0200 ET.
 
 ## Requirements
 Requires download access to individual HTAN-center Synapse projects. 
