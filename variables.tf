@@ -39,13 +39,13 @@ variable "job_name" {
 variable "job_description" {
   type        = string
   description = "Additional text to describe the job"
-  default     = ""
+  default     = null
 }
 
 variable "job_schedule" {
   type        = string
   description = "The job frequency, in cron syntax"
-  default     = "*/2 * * * *"
+  default     = "0 2 * * *"
 }
 
 variable "time_zone" {
@@ -53,7 +53,6 @@ variable "time_zone" {
   description = "Time zone to specify for job scheduler"
   default     = "America/New_York"
 }
-
 
 variable "region" {
   type        = string
