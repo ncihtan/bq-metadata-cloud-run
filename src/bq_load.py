@@ -38,16 +38,14 @@ def load_bq(client, project, dataset, table, data, schema):
 
 
 def get_description(attribute, schema, add_descriptions):
-    
+
     try:
         dsc = schema[schema['Attribute'] == attribute]['Description'].values[0]
         description = (dsc[:1024]) if len(dsc) > 1024 else dsc
-    
+
     except:
         try:
-            dsc = add_descriptions[
-                add_descriptions['Attribute'] == attribute
-            ]['Description'].values[0]
+            dsc = add_descriptions[attribute]
             description = (dsc[:1024]) if len(dsc) > 1024 else dsc
         except:
             description = 'Description unavailable. Contact DCC for more information'
@@ -55,32 +53,24 @@ def get_description(attribute, schema, add_descriptions):
                 '{} attribute not found in HTAN schema'.format(
                     attribute)
             )
-    
+
     return description
 
 def main():
-
-    # map: HTAN center names to HTAN IDs 
-    htan_centers = {
-        "HTAN HTAPP": {"center_id": "hta1"},
-        "PCAPP Pilot Project": {"center_id": "hta2"},
-        "HTAN BU": {"center_id": "hta3"},
-        "HTAN CHOP": {"center_id": "hta4"},
-        "HTAN DFCI": {"center_id": "hta5"},
-        "HTAN Duke": {"center_id": "hta6"},
-        "HTAN HMS": {"center_id": "hta7"},
-        "HTAN MSK": {"center_id": "hta8"},
-        "HTAN OHSU": {"center_id": "hta9"},
-        "HTAN SRRS": {"center_id": "hta15"},
-        "HTAN Stanford": {"center_id": "hta10"},
-        "HTAN Vanderbilt": {"center_id": "hta11"},
-        "HTAN WUSTL": {"center_id": "hta12"},
-        "HTAN TNP SARDANA": {"center_id": "hta13"},
-        "HTAN TNP - TMA": {"center_id": "hta14"},
-        "HTAN SRRS": {"center_id": "hta15"},
-    }
     
+    # environment variables
     SYN_PAT = os.environ.get('SYNAPSE_AUTH_TOKEN')
+
+    center_map = os.environ.get('HTAN_CENTERS_MAP')
+    htan_centers = json.loads(center_map)
+
+    # descriptions for additional BigQuery columns
+    attributes = os.environ.get('ATTRIBUTE_DESCRIPTIONS')
+    add_descriptions = json.loads(attributes)
+
+    # identify file-based components 
+    file_components = os.environ.get('ASSAYS')
+    assays = json.loads(file_components)
 
     # instantiate synapse client
     syn = synapseclient.Synapse()
@@ -88,13 +78,6 @@ def main():
 
     # instantiate google bigquery client
     client = bigquery.Client()
-
-    # read in 'additional' attribute descriptions
-    SHEET_ID = '1RpwQqY7xi-arWJMOMpF0EOhbXPCcQudv8RZ_fp0o_es'
-    SHEET_NAME = 'Sheet1'
-    url = f'https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq?tqx=out:csv&sheet={SHEET_NAME}'
-    
-    add_descriptions = pd.read_csv(url)
 
    	# Query HTAN Fileview excluding test center projects
     all_files = syn.tableQuery(
@@ -129,7 +112,7 @@ def main():
             #do not include project outside official HTAN centers (e.g. test ones)
             continue
 
-        center_id = htan_centers[center]['center_id']
+        center_id = htan_centers[center]
         print("ATLAS: " + center)
 
         datasets = dataset_group.to_dict("records")
@@ -235,8 +218,7 @@ def main():
 
         # add cloud url, file size and md5 
         # columns to non-biospecimen/clinical tables
-        if any(a in key for a in [
-            'Level','Auxiliary','Other','ExSeq','CosMx','Xenium']):
+        if any(a in key for a in assays):
 
             bq_table = bq_table.merge(
                 all_files[['id',

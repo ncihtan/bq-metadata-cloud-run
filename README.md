@@ -18,8 +18,8 @@ Before creating job, build and push a docker image to Google Artifact Registry (
 
 ```
 cd src
-docker build . -t gcr.io/<gc-project>/<image-name>
-docker push gcr.io/<gc-project>/<image-name>
+docker build . -t us-docker.pkg.dev/<gc-project>/gcr.io/<image-name>
+docker push us-docker.pkg.dev/<gc-project>/gcr.io/<image-name>
 ```
 
 ## Deploy Cloud Resources

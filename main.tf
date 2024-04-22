@@ -6,6 +6,10 @@ provider "google" {
 data "google_compute_default_service_account" "default" {
 }
 
+locals {
+  config_json = jsondecode(file("${path.module}/config.json"))
+}
+
 resource "google_cloud_run_v2_job" "default" {
   name     = var.cloud_run_name
   location = var.region
@@ -29,6 +33,18 @@ resource "google_cloud_run_v2_job" "default" {
                 }
               }
             }
+          env {
+            name  = "HTAN_CENTERS_MAP"
+            value = jsonencode(local.config_json.centers)    
+          }
+          env {
+            name  = "ATTRIBUTE_DESCRIPTIONS"
+            value = jsonencode(local.config_json.descriptions) 
+          }
+          env {
+            name  = "ASSAYS"
+            value = jsonencode(local.config_json.assays) 
+          }
         }
         timeout = "2700s"
         service_account = "${google_service_account.sa.email}"
@@ -39,6 +55,7 @@ resource "google_cloud_run_v2_job" "default" {
       launch_stage,
     ]
   }
+  depends_on = [resource.google_service_account.sa]
 }
 
 
