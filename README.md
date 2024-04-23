@@ -5,12 +5,11 @@ Cloud Run job to pull metadata manifests from Synapse and update tables in the G
 Scheduled to run daily at 0200 ET.
 
 ## Requirements
-Requires download access to individual HTAN-center Synapse projects. 
-
 Requires access to deploy resources in the HTAN Google Cloud Project, `htan-dcc`. Please contact an owner of `htan-dcc` to request access (Owners in 2024: Clarisse Lau, Vesteinn Thorsson, William Longabaugh, ISB)
 
 ## Prerequisites
-- Create a [Synapse Auth Token](https://help.synapse.org/docs/Managing-Your-Account.2055405596.html#ManagingYourAccount-PersonalAccessTokens) secret in [Secret Manager](https://cloud.google.com/secret-manager/docs)
+- Create a [Synapse Auth Token](https://help.synapse.org/docs/Managing-Your-Account.2055405596.html#ManagingYourAccount-PersonalAccessTokens) secret in [Secret Manager](https://cloud.google.com/secret-manager/docs). Requires download access to all individual HTAN-center Synapse projects. Currently uses `synapse-service-HTAN-lambda` service account. 
+
 - Install [Terraform](https://developer.hashicorp.com/terraform/tutorials/aws-get-started/install-cli) >= 1.7.0
 
 ## Docker Image
