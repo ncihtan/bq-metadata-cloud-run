@@ -313,27 +313,29 @@ def main():
         )
 
     print('Sending Slack notification')
-    print('')
 
-    # Calculate summary stats
-    total_files_processed = sum(len(value['data']) for value in combined_tables.values())
-    total_projects_processed = len(combined_tables)
-    total_entities_released = len(released_entities)
-    data_release_percentage = (total_entities_released / total_files_processed) * 100 if total_files_processed > 0 else 0
-    cds_release_percentage = (released_entities['CDS_Release'].sum() / total_files_processed) * 100 if total_files_processed > 0 else 0
-
-    # Prepare Slack notification message
-    slack_message = f'''
-    Daily Summary Stats:
-    - Total Files Processed: {total_files_processed}
-    - Total Projects Processed: {total_projects_processed}
-    - Total Entities Released: {total_entities_released}
-    - Data Release Percentage: {data_release_percentage:.2f}%
-    - CDS Release Percentage: {cds_release_percentage:.2f}%
-    '''
-
-    # Send Slack notification
-    send_slack_notification(slack_message)
+    try:
+        # Calculate summary stats
+        total_files_processed = sum(len(value['data']) for value in combined_tables.values())
+        total_projects_processed = len(combined_tables)
+        total_entities_released = len(released_entities)
+        data_release_percentage = (total_entities_released / total_files_processed) * 100 if total_files_processed > 0 else 0
+        cds_release_percentage = (released_entities['CDS_Release'].sum() / total_files_processed) * 100 if total_files_processed > 0 else 0
+    
+        # Prepare Slack notification message
+        slack_message = f'''
+        Daily Summary Stats:
+        - Total Files Processed: {total_files_processed}
+        - Total Projects Processed: {total_projects_processed}
+        - Total Entities Released: {total_entities_released}
+        - Data Release Percentage: {data_release_percentage:.2f}%
+        - CDS Release Percentage: {cds_release_percentage:.2f}%
+        '''
+    
+        # Send Slack notification
+        send_slack_notification(slack_message)
+    except:
+        print('Failed to send Slack notification!'
 
     print( '' )
     print( ' Done! ' )
