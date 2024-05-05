@@ -58,6 +58,16 @@ def get_description(attribute, schema, add_descriptions):
     
     return description
 
+# Function to send Slack notification
+def send_slack_notification(message):
+    webhook_url = os.environ.get('SLACK_WEBHOOK_URL')
+    if webhook_url:
+        data = {'text': message}
+        response = requests.post(webhook_url, json=data)
+        if response.status_code != 200:
+            print('Failed to send Slack notification.')
+
+
 def main():
 
     # map: HTAN center names to HTAN IDs 
@@ -301,6 +311,29 @@ def main():
             'htan-dcc', 'combined_assays', 
             key, bq_table.drop_duplicates(), bq_schema
         )
+
+    print('Sending Slack notification')
+    print('')
+
+    # Calculate summary stats
+    total_files_processed = sum(len(value['data']) for value in combined_tables.values())
+    total_projects_processed = len(combined_tables)
+    total_entities_released = len(released_entities)
+    data_release_percentage = (total_entities_released / total_files_processed) * 100 if total_files_processed > 0 else 0
+    cds_release_percentage = (released_entities['CDS_Release'].sum() / total_files_processed) * 100 if total_files_processed > 0 else 0
+
+    # Prepare Slack notification message
+    slack_message = f'''
+    Daily Summary Stats:
+    - Total Files Processed: {total_files_processed}
+    - Total Projects Processed: {total_projects_processed}
+    - Total Entities Released: {total_entities_released}
+    - Data Release Percentage: {data_release_percentage:.2f}%
+    - CDS Release Percentage: {cds_release_percentage:.2f}%
+    '''
+
+    # Send Slack notification
+    send_slack_notification(slack_message)
 
     print( '' )
     print( ' Done! ' )
