@@ -137,9 +137,8 @@ def main():
             # data type/schema component
             try:
                 component = manifest_data['Component'][0]
-            except IndexError:
-                print("Manifest data unexpected: " + 
-                    manifest_path + " " + str(manifest_data)
+            except:
+                print("Component not found in manifest %s" %dataset['id']
                 )
                 continue
 
@@ -167,22 +166,24 @@ def main():
                 continue
 
             for a in attr:
-                try:
-                    vv = [x.strip(' ') for x in list(
-                        data_model[data_model['label'] == 
-                        a.replace(' ','').lower()]['Valid_Values'])[0].split(',')
-                    ]
-                    
-                    for v in vv:                        
-                        try:
-                            attr = attr + [x.strip(' ') for x in list(
-                                data_model[data_model['label'] == 
-                                v.replace(' ','').lower()]['DependsOn'])[0].split(',')
-                            ]
-                        except:
-                            continue
-                except:
+                if a in ['Data Type','Assay Type']:
                     continue
+                else:
+                    try:
+                        vv = [x.strip(' ') for x in list(
+                            data_model[data_model['label'] == 
+                            a.replace(' ','').lower()]['Valid_Values'])[0].split(',')
+                        ]
+                        for v in vv:                        
+                            try:
+                                attr = attr + [x.strip(' ') for x in list(
+                                    data_model[data_model['label'] == 
+                                    v.replace(' ','').lower()]['DependsOn'])[0].split(',')
+                                ]
+                            except:
+                                continue
+                    except:
+                        continue
 
 
             if component in ['BulkRNA-seqLevel2','BulkWESLevel2']:
@@ -253,6 +254,12 @@ def main():
             bq_table = bq_table.merge(
                 released_entities[['entityId','Data_Release','CDS_Release']],
                 how='left', on='entityId'
+            )
+
+        if key == 'AccessoryManifest':
+            bq_table = bq_table.drop(columns = ['entityId']).merge(
+                released_entities[['entityId','Data_Release']],
+                how='left', left_on='Accessory Synapse ID',right_on='entityId'
             )
 
         # create bigquery table schema: 
